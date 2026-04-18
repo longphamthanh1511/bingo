@@ -1,0 +1,376 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  #app {
+    background: linear-gradient(160deg, #1a0533 0%, #2d0a5c 50%, #1a0533 100%);
+    background-size: cover;
+    background-position: center;
+    min-height: 80vh;
+    border-radius: var(--border-radius-lg);
+    padding: 2vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5vh;
+  }
+  h2.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .title-text {
+    font-size: 3vw;
+    font-weight: 500;
+    color: #f9d74c;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px #f9d74c88;
+  }
+  .stage {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0vw;
+    width: 100%;
+    max-width: 30vw;
+  }
+  .character { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+  /* HOST character */
+.host-body { 
+  position: relative;
+  width: 12vw;        
+  height: auto;      
+  overflow: visible;
+}
+
+  .host-head {
+    position: absolute;
+    width: 4vw;
+    height: 4vw;
+    border-radius: 100%;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    top: -10%;    
+    left: 33%;    
+    transform: translateX(-50%);
+  }
+
+  .host-head img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  /* SPINNER GIRL character */
+  .girl-body { 
+    position: relative;
+    width: 10vw;        
+    height: auto;      
+    overflow: visible;
+  }
+  .girl-head {
+    position: absolute;
+    width: 4vw;
+    height: 4vw;
+    border-radius: 100%;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    top: -10%;
+    left: 70%;
+    transform: translateX(-50%);
+  }
+  .girl-head img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  /*image*/
+
+.character-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* keeps full body visible */
+  display: block;
+}
+
+  @keyframes sway {
+    0%,100% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+  }
+  @keyframes spin-girl {
+    0% { transform: rotate(-15deg); }
+    25% { transform: rotate(15deg); }
+    50% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+    100% { transform: rotate(-15deg); }
+  }
+  @keyframes host-bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .girl-body.spinning { animation: spin-girl 0.4s ease-in-out infinite; transform-origin: bottom center; }
+  .host-body.excited { animation: host-bounce 0.5s ease-in-out infinite; }
+
+  /* Drum machine */
+  .drum {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .drum-cage {
+    width: 18vw; height: 18vw; border-radius: 50%;
+    border: 3px solid #f9d74c;
+    background: rgba(249,215,76,0.08);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: visible;
+  }
+  .drum-inner {
+    width: 14vw; height: 14vw; border-radius: 50%;
+    border: 2px dashed rgba(249,215,76,0.4);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .drum-number {
+    position: absolute;
+    font-size: 1.2vw; font-weight: 500;
+    color: #f9d74c;
+    width: 2vw; height: 2vw;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(249,215,76,0.1);
+    border: 1px solid rgba(249,215,76,0.3);
+  }
+  .drum-number:nth-child(1) { top: 0.5vw; left: 50%; transform: translateX(-50%); }
+  .drum-number:nth-child(2) { top: 1.5vw; right: 1.5vw; }
+  .drum-number:nth-child(3) { bottom: 1.5vw; right: 1.5vw; }
+  .drum-number:nth-child(4) { bottom: 0.5vw; left: 50%; transform: translateX(-50%); }
+  .drum-number:nth-child(5) { bottom: 1.5vw; left: 1.5vw; }
+  .drum-number:nth-child(6) { top: 1.5vw; left: 1.5vw; }
+  @keyframes rotate-drum {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .drum-cage.spinning { animation: rotate-drum 0.6s linear infinite; }
+  .big-number {
+    font-size: 5vw; font-weight: 500;
+    color: #fff;
+    position: relative; z-index: 2;
+    min-width: 10vw; text-align: center;
+    transition: transform 0.2s;
+  }
+  @keyframes pop-number {
+    0% { transform: scale(0.2) rotate(-10deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(3deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .big-number.pop { animation: pop-number 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+  .spin-btn {
+    background: #f9d74c; color: #1a0533;
+    border: none; border-radius: 30px;
+    padding: 1.5vh 4.5vw; font-size: 2vw; font-weight: 500;
+    cursor: pointer; transition: transform 0.1s, background 0.1s;
+    letter-spacing: 1px;
+  }
+  .spin-btn:hover { background: #ffe566; transform: scale(1.04); }
+  .spin-btn:active { transform: scale(0.97); }
+  .spin-btn:disabled { background: #888; color: #ccc; cursor: not-allowed; }
+
+  .called-section {
+    width: 100%; max-width: 80vw;
+    background: rgba(255,255,255,0.06);
+    border-radius: var(--border-radius-md);
+    padding: 1.5vh 2vw;
+  }
+  .called-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1vh;
+  }
+  .called-title { font-size: 1.5vw; color: #c9a8f0; }
+  .clear-btn {
+    font-size: 1.3vw; color: #f08080; background: none;
+    border: 1px solid #f0808060; border-radius: 10px;
+    padding: 0.3vh 1.3vw; cursor: pointer;
+  }
+  .called-grid {
+    display: flex; flex-wrap: wrap; gap: 0.6vw;
+  }
+  .called-chip {
+    padding: 0.4vh 1vw; border-radius: 12px;
+    font-size: 1.3vw; font-weight: 500;
+    color: #fff; background: #666;
+  }
+  .counter { font-size: 1.4vw; color: #c9a8f0; text-align: center; }
+  .speech-bubble {
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px 12px 12px 0;
+    padding: 0.9vh 1.5vw;
+    font-size: 1.4vw; color: #fff;
+    min-width: 9vw; text-align: center;
+    min-height: 4vh;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.2vh;
+    position: relative;
+    top: -5vh;
+  }
+  .all-called {
+    text-align: center; font-size: 1.6vw; color: #f9d74c;
+    padding: 1.2vh;
+  }
+</style>
+
+<div id="app">
+  <h2 class="sr-only">Bingo number spinner with animated host and spinning girl characters</h2>
+  <div class="title-text">✦ BINGO ✦</div>
+
+  <div class="stage">
+  <!-- Host (LEFT) -->
+  <div class="character">
+    <div class="speech-bubble" id="host-bubble">Let's play!</div>
+    <div class="host-body" id="host-body">
+      <img src="media/host_body.png" class="character-img">
+      <div class="host-head">
+        <img src="media/host_face.jpg" alt="Host face">
+      </div>
+    </div>
+  </div>
+
+  <!-- Drum (CENTER) -->
+  <div class="drum">
+    <div class="drum-cage">
+      <div class="drum-inner">
+        <div class="drum-number">1</div>
+        <div class="drum-number">16</div>
+        <div class="drum-number">31</div>
+        <div class="drum-number">46</div>
+        <div class="drum-number">61</div>
+        <div class="drum-number">15</div>
+        <div class="big-number" id="big-number">?</div>
+      </div>
+    </div>
+    <button class="spin-btn" id="spin-btn" onclick="spinNumber()">SPIN!</button>
+  </div>
+
+  <!-- Girl (RIGHT) -->
+  <div class="character girl-character">
+    <div class="speech-bubble" id="girl-bubble">Ready!</div>
+    <div class="girl-body" id="girl-body">
+      <img src="media/girl_body.png" class="character-img">
+      <div class="girl-head">
+        <img src="media/girl_face.jpg" alt="Girl face">
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="called-section">
+    <div class="called-header">
+      <span class="called-title" id="counter-text">0 of 75 called</span>
+      <button class="clear-btn" onclick="clearAll()">Reset game</button>
+    </div>
+    <div class="called-grid" id="called-grid">
+      <span style="font-size:12px;color:#888;">No numbers called yet</span>
+    </div>
+  </div>
+</div>
+<audio id="spin-sound" src="media/spin.mp3" preload="auto"></audio>
+<script>
+  const HOST_SAYS = ["Good luck everyone!","What a number!","Here we go!","Ooh, great pick!","Number coming up!","Eyes down!","This is the one!","Who's got it?"];
+  const GIRL_SAYS = ["It's out!","Spinning...","Ta-da!","Woo-hoo!","Great number!","Here it comes!","Spin spin spin!","And it is..."];
+  
+  let available = [];
+  let called = [];
+
+  function buildAvailable() {
+    available = [];
+    for (let n = 1; n <= 75; n++) available.push(n);
+  }
+  buildAvailable();
+
+  let spinInterval = null;
+  let spinTimeout = null;
+
+  function spinNumber() {
+    
+    if (available.length === 0) return;
+    const btn = document.getElementById('spin-btn');
+    btn.disabled = true;
+    const spinSound = document.getElementById('spin-sound');
+    spinSound.currentTime = 0;
+    spinSound.loop = true;
+    spinSound.play();
+
+    const drumCage = document.querySelector('.drum-cage');
+    const girlBody = document.getElementById('girl-body');
+    const hostBody = document.getElementById('host-body');
+    const numEl = document.getElementById('big-number');
+    const hostBubble = document.getElementById('host-bubble');
+    const girlBubble = document.getElementById('girl-bubble');
+    
+    drumCage.classList.add('spinning');
+    girlBody.classList.add('spinning');
+    hostBody.classList.add('excited');
+    hostBubble.textContent = GIRL_SAYS[Math.floor(Math.random()*GIRL_SAYS.length)];
+    girlBubble.textContent = "Spinning...";
+    numEl.textContent = '?';
+    numEl.classList.remove('pop');
+
+    let flashCount = 0;
+    spinInterval = setInterval(() => {
+      const r = available[Math.floor(Math.random() * available.length)];
+      numEl.textContent = r;
+      flashCount++;
+    }, 80);
+
+    spinTimeout = setTimeout(() => {
+      clearInterval(spinInterval);
+      drumCage.classList.remove('spinning');
+      girlBody.classList.remove('spinning');
+      hostBody.classList.remove('excited');
+      spinSound.pause();
+      spinSound.currentTime = 0;
+
+      const idx = Math.floor(Math.random() * available.length);
+      const pick = available.splice(idx, 1)[0];
+      called.push(pick);
+
+      numEl.textContent = pick;
+      numEl.classList.add('pop');
+
+      hostBubble.textContent = HOST_SAYS[Math.floor(Math.random()*HOST_SAYS.length)];
+      girlBubble.textContent = pick + '!';
+
+      updateCalledGrid();
+      btn.disabled = available.length === 0;
+      if (available.length === 0) {
+        document.querySelector('.all-called') || document.getElementById('app').insertAdjacentHTML('beforeend','<div class="all-called">🎉 All 75 numbers called! Game over!</div>');
+      }
+    }, 4000);
+  }
+
+  function updateCalledGrid() {
+    const grid = document.getElementById('called-grid');
+    const counter = document.getElementById('counter-text');
+    counter.textContent = called.length + ' of 75 called';
+    if (called.length === 0) {
+      grid.innerHTML = '<span style="font-size:12px;color:#888;">No numbers called yet</span>';
+      return;
+    }
+    grid.innerHTML = called.map(c =>
+      `<span class="called-chip">${c}</span>`
+    ).join('');
+  }
+
+  function clearAll() {
+    clearInterval(spinInterval);
+    clearTimeout(spinTimeout);
+    called = [];
+    buildAvailable();
+    document.getElementById('big-number').textContent = '?';
+    document.getElementById('big-number').classList.remove('pop');
+    document.getElementById('spin-btn').disabled = false;
+    document.getElementById('host-bubble').textContent = "Let's play!";
+    document.getElementById('girl-bubble').textContent = "Ready!";
+    const ae = document.querySelector('.all-called');
+    if (ae) ae.remove();
+    updateCalledGrid();
+  }
+</script>
