@@ -110,7 +110,7 @@
     0%,100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
   }
-  .girl-body.spinning { animation: spin-girl 0.8s ease-in-out infinite; transform-origin: bottom center; }
+  .girl-body.spinning { animation: spin-girl 2s ease-in-out infinite; transform-origin: bottom center; }
   .host-body.excited { animation: host-bounce 0.5s ease-in-out infinite; }
 
   /* Drum machine */
@@ -244,9 +244,25 @@
     text-align: center; font-size: 1.6vw; color: #f9d74c;
     padding: 1.2vh;
   }
+
+  #app-description {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: auto;
+    height: auto;
+    background: rgba(255,255,255,0.1);
+    color: orange;
+    padding: 5px;
+    font-size: 18px;
+    font-family: inherit;
+    resize: none;
+  }
 </style>
 
 <div id="app">
+  <div id="app-description">PM: Pham Thanh Long<br>Designer: ファムタンロン<br>Dev: ハム太郎<br>Tester: ファンタム</div>
+
   <h2 class="sr-only">Bingo number spinner with animated host and spinning girl characters</h2>
   <div class="title-text">✦ Trang Long Weđing Bingo ✦</div>
 
@@ -257,7 +273,7 @@
     <div class="host-body" id="host-body">
       <img src="media/host_body.png" class="character-img">
       <div class="host-head">
-        <img src="media/host_face.jpg" alt="Host face">
+        <img src="media/host_face.png" alt="Host face">
       </div>
     </div>
   </div>
@@ -293,7 +309,7 @@
     <div class="girl-body" id="girl-body">
       <img src="media/girl_body.png" class="character-img">
       <div class="girl-head">
-        <img src="media/girl_face.jpg" alt="Girl face">
+        <img src="media/girl_face.png" alt="Girl face">
       </div>
     </div>
   </div>
@@ -311,10 +327,12 @@
 </div>
 <audio id="spin-sound" src="media/spin.mp3" preload="auto"></audio>
 <script>
-  const HOST_SAYS = ["Good luck everyone!","Con số gì đây, con số gì đây","次の番号、いきます！","Number coming up!","Tích cực quay ..., vận may sẽ đến","さあ運命の番号は…？"];
-  const GIRL_SAYS = ["Spin spin spin!","Gà quay","回ります、回ります〜！","Here it comes!","Chóng hết cả mặt","いい番号出るかな〜？"];
-  
-  let available = [];
+  const HOST_SAYS = ["Good luck everyone!","Con số gì đây, con số gì đây","次の番号、いきます！","Tích cực quay ..., vận may sẽ đến","さあ運命の番号は…？","ケイタ雑魚っ","Còn thở là còn gỡ!","同期の中で、俺一番優秀","Đánh con 83 mà nó lại ra con 38","Chắc chắn mai trả"];
+  const GIRL_SAYS = ["Spin spin spin!","Gà quay","回ります、回ります〜！","Here it comes!","Chóng hết cả mặt","いい番号出るかな〜？", "I'm so dizzy", "Chóng hết cả mặt", "頭痛い～"];
+    // Face image options (add more image filenames as needed)
+  const HOST_FACES = ["media/host_face.png", "media/host_face2.png", "media/host_face3.png"];
+  const GIRL_FACES = ["media/girl_face.png", "media/girl_face2.png", "media/girl_face3.png"];
+    let available = [];
   let called = [];
 
   function buildAvailable() {
@@ -356,6 +374,15 @@
       const r = available[Math.floor(Math.random() * available.length)];
       numEl.textContent = r;
       flashCount++;
+      
+      // Randomly change face images during spin
+      if (flashCount % 5 === 0) {
+        const hostFaceImg = document.querySelector('.host-head img');
+        hostFaceImg.src = HOST_FACES[Math.floor(Math.random() * HOST_FACES.length)];
+        
+        const girlFaceImg = document.querySelector('.girl-head img');
+        girlFaceImg.src = GIRL_FACES[Math.floor(Math.random() * GIRL_FACES.length)];
+      }
     }, 80);
 
     spinTimeout = setTimeout(() => {
@@ -365,6 +392,10 @@
       hostBody.classList.remove('excited');
       spinSound.pause();
       spinSound.currentTime = 0;
+      
+      // Reset faces back to default
+      document.querySelector('.host-head img').src = HOST_FACES[0];
+      document.querySelector('.girl-head img').src = GIRL_FACES[0];
 
       const idx = Math.floor(Math.random() * available.length);
       const pick = available.splice(idx, 1)[0];
