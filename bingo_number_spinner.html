@@ -6,7 +6,7 @@
     background: linear-gradient(160deg, #1a0533 0%, #2d0a5c 50%, #1a0533 100%);
     background-size: cover;
     background-position: center;
-    min-height: 80vh;
+    min-height: 100vh;
     border-radius: var(--border-radius-lg);
     padding: 2vw;
     display: flex;
@@ -22,6 +22,9 @@
     letter-spacing: 4px;
     text-transform: uppercase;
     text-shadow: 0 0 20px #f9d74c88;
+    margin-bottom: 5vh;
+    margin-bottom: 5vh;
+    gap: 0.5vw;
   }
   .stage {
     display: flex;
@@ -107,7 +110,7 @@
     0%,100% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
   }
-  .girl-body.spinning { animation: spin-girl 0.4s ease-in-out infinite; transform-origin: bottom center; }
+  .girl-body.spinning { animation: spin-girl 0.8s ease-in-out infinite; transform-origin: bottom center; }
   .host-body.excited { animation: host-bounce 0.5s ease-in-out infinite; }
 
   /* Drum machine */
@@ -245,7 +248,7 @@
 
 <div id="app">
   <h2 class="sr-only">Bingo number spinner with animated host and spinning girl characters</h2>
-  <div class="title-text">✦ BINGO ✦</div>
+  <div class="title-text">✦ Trang Long Weđing Bingo ✦</div>
 
   <div class="stage">
   <!-- Host (LEFT) -->
@@ -308,8 +311,8 @@
 </div>
 <audio id="spin-sound" src="media/spin.mp3" preload="auto"></audio>
 <script>
-  const HOST_SAYS = ["Good luck everyone!","What a number!","Here we go!","Ooh, great pick!","Number coming up!","Eyes down!","This is the one!","Who's got it?"];
-  const GIRL_SAYS = ["It's out!","Spinning...","Ta-da!","Woo-hoo!","Great number!","Here it comes!","Spin spin spin!","And it is..."];
+  const HOST_SAYS = ["Good luck everyone!","Con số gì đây, con số gì đây","次の番号、いきます！","Number coming up!","Tích cực quay ..., vận may sẽ đến","さあ運命の番号は…？"];
+  const GIRL_SAYS = ["Spin spin spin!","Gà quay","回ります、回ります〜！","Here it comes!","Chóng hết cả mặt","いい番号出るかな〜？"];
   
   let available = [];
   let called = [];
@@ -343,8 +346,8 @@
     drumCage.classList.add('spinning');
     girlBody.classList.add('spinning');
     hostBody.classList.add('excited');
-    hostBubble.textContent = GIRL_SAYS[Math.floor(Math.random()*GIRL_SAYS.length)];
-    girlBubble.textContent = "Spinning...";
+    hostBubble.textContent = HOST_SAYS[Math.floor(Math.random()*HOST_SAYS.length)];
+    girlBubble.textContent = GIRL_SAYS[Math.floor(Math.random()*GIRL_SAYS.length)];
     numEl.textContent = '?';
     numEl.classList.remove('pop');
 
@@ -370,7 +373,7 @@
       numEl.textContent = pick;
       numEl.classList.add('pop');
 
-      hostBubble.textContent = HOST_SAYS[Math.floor(Math.random()*HOST_SAYS.length)];
+      hostBubble.textContent = pick + '!';
       girlBubble.textContent = pick + '!';
 
       updateCalledGrid();
@@ -378,7 +381,7 @@
       if (available.length === 0) {
         document.querySelector('.all-called') || document.getElementById('app').insertAdjacentHTML('beforeend','<div class="all-called">🎉 All 75 numbers called! Game over!</div>');
       }
-    }, 4000);
+    }, 3500);
   }
 
   function updateCalledGrid() {
