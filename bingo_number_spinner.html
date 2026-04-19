@@ -279,6 +279,7 @@
   </div>
 
   <!-- Drum (CENTER) -->
+  <script src="confetti.js"></script>
   <div class="drum">
     <div class="drum-cage">
       <div class="drum-inner">
@@ -326,6 +327,7 @@
   </div>
 </div>
 <audio id="spin-sound" src="media/spin.mp3" preload="auto"></audio>
+<audio id="end-sound" src="media/end.mp3" preload="auto"></audio>
 <script>
   const HOST_SAYS = ["Good luck everyone!","Con số gì đây, con số gì đây","次の番号、いきます！","Tích cực quay ..., vận may sẽ đến","さあ運命の番号は…？","ケイタ雑魚っ","Còn thở là còn gỡ!","同期の中で、俺一番優秀","Đánh con 83 mà nó lại ra con 38","Chắc chắn mai trả"];
   const GIRL_SAYS = ["Spin spin spin!","Gà quay","回ります、回ります〜！","Here it comes!","Chóng hết cả mặt","いい番号出るかな〜？", "I'm so dizzy", "Chóng hết cả mặt", "頭痛い～"];
@@ -393,6 +395,15 @@
       spinSound.pause();
       spinSound.currentTime = 0;
       
+      // Play ending sound for 1 second
+      const endSound = document.getElementById('end-sound');
+      endSound.currentTime = 0;
+      endSound.play();
+      setTimeout(() => {
+        endSound.pause();
+        endSound.currentTime = 0;
+      }, 2000);
+      
       // Reset faces back to default
       document.querySelector('.host-head img').src = HOST_FACES[0];
       document.querySelector('.girl-head img').src = GIRL_FACES[0];
@@ -403,6 +414,8 @@
 
       numEl.textContent = pick;
       numEl.classList.add('pop');
+
+      fireConfetti();
 
       hostBubble.textContent = pick + '!';
       girlBubble.textContent = pick + '!';
@@ -441,5 +454,29 @@
     const ae = document.querySelector('.all-called');
     if (ae) ae.remove();
     updateCalledGrid();
+  }
+
+  function fireConfetti() {
+    const duration = 1500;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 }
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 }
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
   }
 </script>
